@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IKS Mock Test – All 130 Questions</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f5f5f2; color: #1a1a1a; padding: 1rem; }
+  .quiz-wrap { max-width: 720px; margin: 0 auto; padding-bottom: 3rem; }
+  h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 1rem; }
+  .score-bar { position: sticky; top: 0; background: #fff; border-bottom: 1px solid #e0e0e0; padding: 10px 0; margin-bottom: 1rem; display: flex; gap: 16px; align-items: center; z-index: 10; border-radius: 8px; padding: 8px 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .score-item { font-size: 13px; color: #555; }
+  .score-item span { font-weight: 600; color: #1a1a1a; }
+  .reset-btn { margin-left: auto; font-size: 12px; padding: 5px 14px; border-radius: 6px; border: 1px solid #ccc; background: transparent; color: #555; cursor: pointer; }
+  .reset-btn:hover { background: #f0f0f0; }
+  .week-label { font-size: 12px; font-weight: 600; color: #185fa5; background: #e6f1fb; border-radius: 6px; padding: 3px 12px; display: inline-block; margin: 1.5rem 0 0.75rem; }
+  .q-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+  .q-num { font-size: 11px; color: #999; margin-bottom: 4px; }
+  .q-text { font-size: 15px; font-weight: 500; color: #1a1a1a; margin-bottom: 0.75rem; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 6px; }
+  .option { display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px; border-radius: 8px; border: 1px solid #e8e8e8; cursor: pointer; font-size: 14px; color: #1a1a1a; background: #fafafa; transition: background 0.12s; line-height: 1.4; }
+  .option:hover { background: #f0f0f0; }
+  .option.correct { background: #eaf3de; border-color: #3b6d11; color: #27500a; }
+  .option.wrong { background: #fcebeb; border-color: #a32d2d; color: #501313; }
+  .opt-letter { font-weight: 600; min-width: 18px; font-size: 13px; flex-shrink: 0; }
+  .reveal-btn { margin-top: 0.75rem; font-size: 12px; padding: 5px 14px; border-radius: 6px; border: 1px solid #ccc; background: transparent; color: #555; cursor: pointer; }
+  .reveal-btn:hover { background: #f5f5f5; }
+  .answer-box { margin-top: 0.75rem; padding: 10px 12px; border-radius: 8px; background: #eaf3de; border: 1px solid #3b6d11; font-size: 13px; color: #27500a; display: none; line-height: 1.5; }
+  .answer-box .reason { margin-top: 5px; color: #555; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="quiz-wrap">
+  <h1>IKS Mock Test</h1>
+  <p class="subtitle">All 130 Questions — Weeks 0–5 + Extra | Click an option to answer, or reveal the answer directly.</p>
+  <div class="score-bar">
+    <div class="score-item">Answered: <span id="answered">0</span></div>
+    <div class="score-item">Correct: <span id="correct-count">0</span></div>
+    <div class="score-item">Score: <span id="score-pct">0%</span></div>
+    <button class="reset-btn" onclick="resetAll()">Reset all</button>
+  </div>
+  <div id="quiz-body"></div>
+</div>
+
+<script>
+const weeks = [
+  { label: "Week 0", questions: [
+    { q: "Which of the following is the oldest source of Indian knowledge tradition?", opts: ["Upanishads","Puranas","Vedas","Smritis"], ans: 2, reason: "The Vedas are the most ancient texts (~1500 BCE or earlier), predating all others listed." },
+    { q: "The Upanishads primarily focus on:", opts: ["Social customs","Metaphysical and spiritual knowledge","Historical narratives","Temple rituals"], ans: 1, reason: "Upanishads explore Brahman, Atman, and ultimate reality — not history or rituals." },
+    { q: "Arthashastra is traditionally attributed to:", opts: ["Panini","Patanjali","Kautilya (Chanakya)","Kalidasa"], ans: 2, reason: "Chanakya was advisor to Chandragupta Maurya and authored this treatise on statecraft." },
+    { q: "Which Bhakti saint preached devotion without caste distinctions?", opts: ["Tulsidas","Kabir","Kalidasa","Bana"], ans: 1, reason: "Kabir rejected caste and religion-based divisions, preaching universal devotion to one God." },
+    { q: "The Bhakti movement played an important role in:", opts: ["Strengthening ritualism","Promoting social equality","Encouraging royal authority","Expanding foreign trade"], ans: 1, reason: "Bhakti saints challenged caste hierarchy, making devotion accessible to all people." },
+    { q: "Composite culture of India refers to:", opts: ["Purely Vedic traditions","Cultural unity through diversity","Dominance of one religion","Westernization of Indian society"], ans: 1, reason: "India's composite culture is a blend of Hindu, Muslim, Buddhist traditions coexisting harmoniously." },
+    { q: "The Nagara style of temple architecture is mainly found in:", opts: ["South India","Central Asia","North India","Eastern Europe"], ans: 2, reason: "Nagara style has curvilinear shikhara and is dominant in northern India; Dravida is southern." },
+    { q: "Indian forts were primarily built for:", opts: ["Religious ceremonies","Residential purposes only","Defence and administration","Educational activities"], ans: 2, reason: "Forts like Chittorgarh served as military strongholds and royal administrative centers." },
+    { q: "Pongal is a major regional festival of:", opts: ["Punjab","Tamil Nadu","West Bengal","Rajasthan"], ans: 1, reason: "Pongal is the harvest festival celebrated by Tamil people, typically in January." },
+    { q: "Which festival marks the end of the Islamic holy month of Ramadan?", opts: ["Eid-ul-Adha","Muharram","Eid-ul-Fitr","Shab-e-Barat"], ans: 2, reason: "Eid-ul-Fitr marks end of Ramadan fasting; Eid-ul-Adha marks the festival of sacrifice." },
+    { q: "Khadi is closely associated with:", opts: ["Mughal court culture","Indian freedom movement","Industrial textile production","Temple rituals"], ans: 1, reason: "Gandhi promoted Khadi as a symbol of self-reliance and resistance to British goods." },
+    { q: "Handloom traditions in India are important because they:", opts: ["Replace modern industries","Preserve indigenous skills and culture","Eliminate regional diversity","Depend solely on machines"], ans: 1, reason: "Handlooms carry regional craft traditions passed through generations, preserving cultural identity." },
+    { q: "Colonial education in India was mainly introduced to:", opts: ["Promote indigenous knowledge","Create administrative manpower","Encourage rural development","Strengthen traditional gurukuls"], ans: 1, reason: "Macaulay's system aimed to produce English-speaking clerks to run British colonial administration." },
+    { q: "Which commission is associated with the foundation of modern education in India?", opts: ["Simon Commission","Hunter Commission","Macaulay's Minute","Sadler Commission"], ans: 2, reason: "Macaulay's Minute (1835) laid the foundation of English-medium education in colonial India." },
+    { q: "The first modern universities in India (1857) were established at:", opts: ["Delhi, Agra, Lahore","Calcutta, Bombay, Madras","Patna, Allahabad, Banaras","Aligarh, Lucknow, Dacca"], ans: 1, reason: "Three presidency universities were established simultaneously in 1857 at these three cities." },
+  ]},
+  { label: "Week 1", questions: [
+    { q: "Which of the following best describes the Indian concept of knowledge?", opts: ["Information acquired through experience only","Holistic understanding integrating material and spiritual dimensions","Empirical data derived from experiments alone","Rational reasoning independent of moral values"], ans: 1, reason: "Indian knowledge is never purely empirical — it integrates dharma, ethics, and spirituality holistically." },
+    { q: "In Indian philosophy, knowledge is considered as:", opts: ["The path toward liberation and harmony with the universe","A means to economic prosperity only","A collection of worldly facts and information","The pursuit of personal pleasure"], ans: 0, reason: "Jnana (knowledge) leads to Moksha (liberation) — the ultimate goal in Indian philosophy." },
+    { q: "The Indian notion of knowledge emphasizes:", opts: ["Separation of science and spirituality","Unity of thought, action, and values","Materialism and external progress","Exclusivity of Western methodologies"], ans: 1, reason: "Indian knowledge system integrates thought, action, and values as inseparable dimensions of life." },
+    { q: "The Vedas are considered a primary source of Indian knowledge because they:", opts: ["Contain historical accounts of rulers","Present hymns revealing universal and eternal truths","Focus solely on ritual practices","Discuss trade and economic relations"], ans: 1, reason: "Vedas contain timeless hymns about cosmic truths, not limited to rituals or history." },
+    { q: "Vishnu Gupta was:", opts: ["An adviser and Minister to Chandragupta Maurya","Author of Panchtantra","A devotee of Lord Vishnu among Alvar Saints","Original name of Kalidas"], ans: 0, reason: "Vishnu Gupta is another name for Kautilya/Chanakya, the advisor to Chandragupta Maurya." },
+    { q: "Which text primarily emphasizes the moral conduct of rulers and citizens?", opts: ["Rig Veda","Kautilya's Arthashastra","Samaveda","Yoga Sutra"], ans: 1, reason: "Arthashastra is a comprehensive treatise on statecraft, governance, and ethical conduct for rulers." },
+    { q: "Accounts of foreign travelers such as Megasthenes are valuable because they:", opts: ["Depict India's material and cultural life objectively","Promote foreign invasion strategies","Focus on mythology only","Contain no historical relevance"], ans: 0, reason: "Megasthenes' Indica provides an outsider's objective account of Mauryan India's society and culture." },
+    { q: "The writings of Arab travelers such as Al-Biruni highlight:", opts: ["Western dominance in knowledge","Myths about Indian geography","Indian systems of science, philosophy, Dharmasastra and mathematics","Linguistic misunderstandings"], ans: 2, reason: "Al-Biruni's 'Kitab-ul-Hind' documented Indian mathematics, philosophy, and science with great detail." },
+    { q: "The contributions of early ambassadors and travelers help historians to:", opts: ["Understand cross-cultural intellectual exchanges","Focus only on wars and conflicts","Study European history","Ignore indigenous texts"], ans: 0, reason: "Travel accounts provide external perspectives that complement indigenous texts for cross-cultural understanding." },
+    { q: "Revisiting ancient Indian knowledge systems is important because they:", opts: ["Provide outdated perspectives","Promote sustainable and holistic living principles","Encourage rituals and faith traditions","Reject innovation"], ans: 1, reason: "Ancient systems like Ayurveda and Yoga offer sustainable, holistic solutions relevant to modern challenges." },
+    { q: "Ancient Indian educational practices can inspire:", opts: ["Mechanistic learning","Value-based and experiential education","Competitive memorization","Separation of ethics from education"], ans: 1, reason: "Gurukul system emphasized values, character formation, and experiential learning alongside academics." },
+    { q: "Revisiting traditional Indian sciences like Ayurveda and Yoga helps in:", opts: ["Promoting wellness and sustainable health practices","Rejecting medical advancements","Transforming education to ancient beliefs","Encouraging dogmatic traditions"], ans: 0, reason: "Ayurveda and Yoga are globally recognized for promoting holistic wellness and preventive health." },
+    { q: "The term 'Indian Ethos' primarily refers to:", opts: ["The study of Western ethics in colonial India","Industrial growth and materialism","Political ideologies of ancient India","The moral and philosophical foundation of Indian life and thought"], ans: 3, reason: "Indian Ethos refers to the value system rooted in dharma, duty, and spiritual wisdom." },
+    { q: "The core principle of Indian ethos is rooted in:", opts: ["Dharma and universal well-being (Sarvodaya)","Individualism and material success","Conflict and competition","Rationalism and Science"], ans: 0, reason: "Dharma and Sarvodaya (welfare of all) are the foundational principles of Indian ethical thought." },
+    { q: "Indian ethos emphasizes which of the following in professional and personal life?", opts: ["Profit over ethics","Selfish ambition","Ethical conduct, harmony, and duty-consciousness","Disregard for orthodox traditions"], ans: 2, reason: "Indian ethos stresses nishkama karma — doing duty ethically without selfish attachment to results." },
+  ]},
+  { label: "Week 2", questions: [
+    { q: "Which ancient learning center was located in Bihar?", opts: ["Takshashila","Nalanda","Alexandria","Vallabhi"], ans: 1, reason: "Nalanda was a renowned ancient university located in present-day Bihar, attracting scholars globally." },
+    { q: "Manuals, databases and research papers are examples of:", opts: ["Tacit knowledge","Conditional knowledge","Explicit knowledge","Causal knowledge"], ans: 2, reason: "Explicit knowledge is codified, documented knowledge stored in manuals, databases, and papers." },
+    { q: "Which material was commonly used for writing manuscripts in ancient India?", opts: ["Paper only","Stone tablets","Palm leaves and birch bark","Papyrus"], ans: 2, reason: "Palm leaves (south India) and birch bark (north India) were the primary manuscript materials." },
+    { q: "The 'House of Translation' (Maktab Khana) was established by:", opts: ["Jahangir","Shah Jahan","Akbar","Aurangzeb"], ans: 2, reason: "Akbar established Maktab Khana at Fatehpur Sikri in 1574 to translate Sanskrit/Arabic texts into Persian." },
+    { q: "Biopiracy refers to:", opts: ["Legal use of medicinal plants","Unethical use of traditional knowledge to obtain patents","Digital piracy of e-books","Misuse of modern scientific research"], ans: 1, reason: "Biopiracy is when corporations patent traditional knowledge (like turmeric/neem) without community consent." },
+    { q: "Sowa-Rigpa manuscripts are primarily preserved in:", opts: ["Coastal regions","Himalayan regions","Desert regions","Urban libraries"], ans: 1, reason: "Sowa-Rigpa is traditional Tibetan medicine; its manuscripts are preserved in Himalayan regions." },
+    { q: "Shodhganga is an example of:", opts: ["Royal library","Public library","Institutional repository","Temple library"], ans: 2, reason: "Shodhganga is an INFLIBNET digital repository for Indian PhD theses — an institutional repository." },
+    { q: "Which was a key challenge in knowledge management during the medieval period?", opts: ["Information overload","Preservation of fragile manuscripts","Copyright issues","Lack of digital tools"], ans: 1, reason: "Fragile palm leaf and birch bark manuscripts were vulnerable to climate, insects, and time." },
+    { q: "Para Vidya and Apara Vidya are concepts explained in which Upanishad?", opts: ["Chandogya Upanishad","Brihadaranyaka Upanishad","Mundaka Upanishad","Isha Upanishad"], ans: 2, reason: "The Mundaka Upanishad explicitly distinguishes Para Vidya (knowledge of Brahman) from Apara Vidya." },
+    { q: "Which correctly distinguishes Para Vidya from Apara Vidya?", opts: ["Para Vidya deals with ritual practices; Apara with metaphysics","Para Vidya is knowledge of Brahman; Apara is study of Vedas and sciences","Para Vidya is sensory; Apara is intuitive","Para Vidya is social duties; Apara is moral conduct"], ans: 1, reason: "Para Vidya = higher knowledge of Brahman/liberation; Apara = lower knowledge of worldly sciences." },
+    { q: "In Sankhya philosophy, which Guna is responsible for activity and motion?", opts: ["Sattva","Rajas","Tamas","Prakriti"], ans: 1, reason: "Rajas is the guna of activity, passion, and motion; Sattva is clarity; Tamas is inertia." },
+    { q: "According to Sankhya philosophy, liberation (Kaivalya) is attained through:", opts: ["Performance of Vedic rituals","Grace of God (Ishvara)","Discriminative knowledge between Purusha and Prakriti","Practice of Yoga alone"], ans: 2, reason: "In Sankhya, liberation comes from Viveka — discriminating between the self (Purusha) and matter (Prakriti)." },
+    { q: "Which is the correct sequence of Pancha-kosas from gross to subtle?", opts: ["Pranamaya–Annamaya–Manomaya–Vijnanamaya–Anandamaya","Annamaya–Pranamaya–Manomaya–Vijnanamaya–Anandamaya","Manomaya–Annamaya–Pranamaya–Vijnanamaya–Anandamaya","Annamaya–Manomaya–Pranamaya–Anandamaya–Vijnanamaya"], ans: 1, reason: "Anna (food/body) → Prana (breath) → Mano (mind) → Vijnana (intellect) → Ananda (bliss): gross to subtle." },
+    { q: "Which is NOT included among the four Purusharthas?", opts: ["Dharma","Artha","Bhakti","Moksha"], ans: 2, reason: "The four Purusharthas are Dharma, Artha, Kama, and Moksha. Bhakti is not one of them." },
+    { q: "The main purpose of TKDL is to:", opts: ["Sell traditional medicines","Digitize and protect India's traditional knowledge","Promote private patents","Create new herbal products"], ans: 1, reason: "TKDL (Traditional Knowledge Digital Library) documents India's traditional knowledge to prevent biopiracy." },
+  ]},
+  { label: "Week 3", questions: [
+    { q: "Which text is the foundational source of knowledge and spiritual philosophy in Sanskrit literature?", opts: ["The Mahabharata","The Vedas","The Ramayana","The Arthashastra"], ans: 1, reason: "The Vedas are the most foundational texts of Sanskrit literature and Indian spiritual philosophy." },
+    { q: "The concept of 'Dharma' in the Bhagavad Gita primarily refers to:", opts: ["Wealth Accumulation","Material Pleasure","Righteous Duty","Political Power"], ans: 2, reason: "Dharma in Gita means one's righteous duty — Krishna urges Arjuna to fulfill his warrior duty." },
+    { q: "Which of the following is part of Sanskrit Classical Literature?", opts: ["Rigveda","Kalidasa's Abhijnanasakuntalam","Bhagavad Gita","Yajurveda"], ans: 1, reason: "Abhijnanasakuntalam by Kalidasa is a classical Sanskrit drama; Vedas are Shruti, not classical literature." },
+    { q: "Which text is considered the earliest Buddhist canon written in Pali?", opts: ["Vinaya Pitaka","Mahavamsa","Lalitavistara","Divyavadana"], ans: 0, reason: "The Tripitaka (including Vinaya Pitaka) is the earliest Pali Buddhist canon containing Buddha's teachings." },
+    { q: "Which is regarded as the earliest Jain text?", opts: ["Acaranga Sutra","Bhagavati Sutra","Tattvartha Sutra","Kalpa Sutra"], ans: 0, reason: "Acaranga Sutra is considered the oldest Jain Agama, containing rules of conduct for monks." },
+    { q: "The language used in Sangam literature was:", opts: ["Pali","Prakrit","Tamil","Sanskrit"], ans: 2, reason: "Sangam literature (300 BCE–300 CE) was composed in classical Tamil by poets in ancient South India." },
+    { q: "Which Sufi Saint is popularly known as 'Mehboob-e-Ilahi'?", opts: ["Khwaja Moinuddin Chisti","Hazrat Burhanuddin Gharib","Nizamuddin Auliya","Baba Farid"], ans: 2, reason: "Nizamuddin Auliya of the Chishti order was called Mehboob-e-Ilahi meaning 'Beloved of God'." },
+    { q: "The 'Whirling Dervish' in Sufi mysticism was popularized by:", opts: ["Mevlavi order of Jalaluddin Rumi","Chishtia order of Sufism","Chaitanya's Keertan Tradition","Poetry of Amir Khusro"], ans: 0, reason: "The whirling (Sama) dance is the signature practice of Rumi's Mevlavi (Whirling Dervish) order." },
+    { q: "The 'Kafi' style of poetry in Punjab and Sindh was popularized by:", opts: ["Shah Abdul Latif Bhittai","Kabir","Amir Khusrau","Mirza Ghalib"], ans: 0, reason: "Shah Abdul Latif Bhittai is the greatest Sindhi Sufi poet known for Kafi-style spiritual poetry." },
+    { q: "Which Bhakti Poet is known for devotional songs expressing deep love for Krishna?", opts: ["Akka Mahadevi","Meera Bai","Andal","Bahina Bai"], ans: 1, reason: "Meera Bai's bhajans are iconic expressions of intense personal devotion and longing for Krishna." },
+    { q: "Which poet Saint composed the 'Ramcharitmanas' in Awadhi?", opts: ["Surdas","Kabir","Tulsidas","Chaitanya Mahaprabhu"], ans: 2, reason: "Tulsidas composed Ramcharitmanas in Awadhi language in the 16th century, retelling the Ramayana." },
+    { q: "Saint Kabir's poetry often criticized which aspect of contemporary society?", opts: ["Religious ritualism","Agricultural Practices","Royal Governance","Trade Systems"], ans: 0, reason: "Kabir strongly criticized empty religious rituals in both Hinduism and Islam, promoting inner devotion." },
+    { q: "Who used symbols of Indian folk and rural culture in poetry with regional dialect?", opts: ["Mir Taqi Mir","Amir Khusrau","Mirza Ghalib","Faiz Ahmad Faiz"], ans: 1, reason: "Amir Khusrau used folk idioms, Braj Bhasha, and regional dialects blending Persian and Indian traditions." },
+    { q: "Which Medieval Indian poet is famous for 'Padmavat' written in Awadhi?", opts: ["Malik Muhammad Jayasi","Tulsidas","Kabir","Jayadeva"], ans: 0, reason: "Malik Muhammad Jayasi wrote Padmavat (1540) in Awadhi, a Sufi allegorical poem about Rani Padmini." },
+    { q: "Who is known as a Baul poet of Bengal who rejected orthodoxy and caste?", opts: ["Lalon Fakir","Bankim Chandra","Kazi Nazrul","Chandidas"], ans: 0, reason: "Lalon Fakir (1774–1890) was the greatest Baul mystic who rejected caste and religious divisions." },
+  ]},
+  { label: "Week 4", questions: [
+    { q: "What does the origin of the word 'culture' mainly suggest about its meaning?", opts: ["It is related to entertainment","It is connected to growth and nurturing","It refers to scientific discovery","It means political organization"], ans: 1, reason: "Culture comes from Latin 'cultura' (to cultivate/nurture) — reflecting growth and development of human society." },
+    { q: "Which historical period saw the strongest merging of Hindu and Muslim artistic traditions?", opts: ["Sultanate period","British rule","Post-1947 period","Mughal Period"], ans: 3, reason: "The Mughal era produced greatest Hindu-Muslim cultural synthesis in art, music, architecture, and literature." },
+    { q: "Majma-ul-Bahrain by Dara Shikoh focused on unity between:", opts: ["Vedantic and Sufi ideas","Buddhism and Jainism","Christianity and Judaism","Greek and Roman philosophies"], ans: 0, reason: "Dara Shikoh's work compared Upanishadic Vedanta with Islamic Sufi mysticism, finding common ground." },
+    { q: "Japanese woodblock printing flourished during which century?", opts: ["15th century","16th century","17th century","18th century"], ans: 3, reason: "Japanese ukiyo-e woodblock printing flourished mainly during the 18th century Edo period." },
+    { q: "Madhubani art is a traditional painting style from which Indian state?", opts: ["Rajasthan","Bihar","Gujarat","Punjab"], ans: 1, reason: "Madhubani (Mithila) painting originates from the Mithila region of Bihar, with geometric natural motifs." },
+    { q: "Which pair correctly matches a Rasa with its associated emotion?", opts: ["Hasya – sorrow","Raudra – anger","Karuna – laughter","Bibhatsa – love"], ans: 1, reason: "Raudra = anger/fury. Hasya = laughter, Karuna = compassion/sorrow, Bibhatsa = disgust." },
+    { q: "According to Bharata Muni, which Veda contributed words/concepts to the Natyashastra?", opts: ["Rigveda","Samaveda","Yajurveda","Atharvaveda"], ans: 3, reason: "Natyashastra states it took Abhinaya (expression) from the Atharvaveda among its four Vedic sources." },
+    { q: "Which term in Indian classical arts broadly refers to the art of expression?", opts: ["Rasa","Natya","Abhinaya","Tal"], ans: 2, reason: "Abhinaya means expressive communication through body, face, costume, and inner feeling in classical arts." },
+    { q: "Cheraw is a traditional dance from which Indian state?", opts: ["Manipur","Mizoram","Assam","Nagaland"], ans: 1, reason: "Cheraw is the traditional bamboo dance of the Mizo people of Mizoram, also called the bamboo dance." },
+    { q: "The traditional practice of sitting cross-legged on the floor while eating is known as:", opts: ["Vajrasana","Padmasana","Shavasana","Sukhasana"], ans: 3, reason: "Sukhasana (easy/comfortable pose) is the simple cross-legged sitting position used during meals." },
+    { q: "Thukpa is a traditional noodle-based soup popular among which tribal community?", opts: ["Bhutia tribe","Monpa tribe","Garo tribe","Mizo tribe"], ans: 0, reason: "Thukpa is a Tibetan-origin noodle soup consumed by the Bhutia community of Sikkim and Himalayas." },
+    { q: "The traditional technique of soaking food in a salt solution for preservation is known as:", opts: ["Fermentation","Brining","Roasting","Milling"], ans: 1, reason: "Brining is the process of preserving food in a salt-water solution — used for pickles, olives, etc." },
+    { q: "Which is considered the Mughal Album and beginning of pictorial narrations?", opts: ["Hamzanama","Tuzuk-e-Babri","Humayunama","Shahjahanama"], ans: 0, reason: "Hamzanama was a massive illustrated manuscript commissioned by Akbar, starting Mughal pictorial tradition." },
+    { q: "Emperor Akbar started Maktab-Khana at Fatehpur Sikri in 1574 for:", opts: ["Controlling rural administration","Translating works from Sanskrit and Arabic into Persian","Celebrating Shekh Salim Chishti's birthday","Propagating Din-e-Ilahi"], ans: 1, reason: "Maktab-Khana was a translation bureau where major works were translated into Persian for wider access." },
+    { q: "Nazm-e-Khushter, a book written in Persian by Dara Shukoh is:", opts: ["Translation of Bhagavadgita","Poetry in Praise of Aurangzeb","Translation of Ramayana","Description of Khurasan"], ans: 3, reason: "Nazm-e-Khushter is Dara Shikoh's Persian poetry collection describing his travels and observations of Khurasan." },
+  ]},
+  { label: "Week 5", questions: [
+    { q: "Which system of traditional knowledge emphasizes Shad Rasa (six tastes)?", opts: ["Siddha medicine","Yoga philosophy","Ayurvedic nutrition","Unani healing"], ans: 2, reason: "Ayurveda's dietary system is based on six tastes (sweet, sour, salty, pungent, bitter, astringent)." },
+    { q: "Rajasic foods primarily aggravate which doshas?", opts: ["Kapha and pitta","Vata and kapha","Pitta and vata","Only kapha"], ans: 2, reason: "Rajasic foods (spicy, stimulating) aggravate Pitta and Vata doshas, causing restlessness and inflammation." },
+    { q: "Ashwagandha is often referred to as:", opts: ["Indian saffron","Indian turmeric","Indian basil","Indian ginseng"], ans: 3, reason: "Ashwagandha is called 'Indian ginseng' due to its adaptogenic, strength-building, and rejuvenating properties." },
+    { q: "Which freedom fighter is credited with popularizing Ganesh Chaturthi as a public celebration?", opts: ["Lala Lajpat Rai","Bal Gangadhar Tilak","Bipin Chandra Pal","Mahatma Gandhi"], ans: 1, reason: "Tilak transformed Ganesh Chaturthi into a public 10-day festival in 1893 to unite people against British rule." },
+    { q: "The word 'Pongal' in Tamil is derived from 'pongu,' which means:", opts: ["To boil over or overflow","To harvest crops","To celebrate unity","To cook with spices"], ans: 0, reason: "Pongu means to boil over — symbolizing abundance and prosperity of the harvest season." },
+    { q: "Makar Sankranti marks the transition of the Sun into which zodiac sign?", opts: ["Aquarius","Taurus","Capricorn","Leo"], ans: 2, reason: "Makar = Capricorn in Sanskrit; Sankranti = transition. The sun moves into Capricorn on this day." },
+    { q: "The earliest evidence of clothing in the Indian subcontinent is associated with:", opts: ["Vedic Civilization","Mauryan Empire","Indus Valley Civilization","Gupta Empire"], ans: 2, reason: "Indus Valley Civilization (3000+ BCE) shows earliest evidence of cotton weaving and clothing in India." },
+    { q: "Which is another name for the traditional dress Pattu Pavadai?", opts: ["Mekhela Chador","Lehenga Choli","Langa Davani","Phiran"], ans: 2, reason: "Langa Davani is the Telugu/Kannada name for Pattu Pavadai — a two-piece silk skirt and blouse." },
+    { q: "Which ancient Indian text mentions the term 'vasovaya' for weavers?", opts: ["Rigveda","Arthashastra","Ramayana","Manusmriti"], ans: 0, reason: "The Rigveda contains one of the earliest references to weaving and weavers in Indian civilization." },
+    { q: "According to Sikh belief, the faith was shaped by how many human Gurus?", opts: ["Five","Seven","Ten","Twelve"], ans: 2, reason: "Sikhism has ten human Gurus, from Guru Nanak Dev Ji (1st) to Guru Gobind Singh Ji (10th)." },
+    { q: "Kanjeevaram weavers from Tamil Nadu are famous for producing:", opts: ["Cotton shawls","Woolen blankets","Georgette sarees","Luxurious silk sarees"], ans: 3, reason: "Kanjivaram silk sarees are renowned for their heavy pure silk and zari work from Tamil Nadu." },
+    { q: "The Upanayanam ceremony is associated with introduction of which sacred item?", opts: ["Rudraksha mala","Yajnopavita","Tilak","Sacred lamp"], ans: 1, reason: "Upanayanam (sacred thread ceremony) involves wearing the Yajnopavita (janeu/sacred thread), marking entry into studenthood." },
+    { q: "Who commissioned the construction of the Great Stupa at Sanchi?", opts: ["Chandragupta Maurya","Emperor Ashoka","Harsha Vardhana","King Kanishka"], ans: 1, reason: "Emperor Ashoka built the Great Stupa at Sanchi in the 3rd century BCE after embracing Buddhism." },
+    { q: "Which style of temple architecture developed in northern India?", opts: ["Dravida","Vesara","Nagara","Kalinga"], ans: 2, reason: "Nagara style with curvilinear shikhara is the classical North Indian temple architecture style." },
+    { q: "What is another name for the Sanctum Sanctorum in a temple?", opts: ["Mandapa","Shikhara","Garbhagriha","Pradakshina"], ans: 2, reason: "Garbhagriha (womb chamber) is the innermost sanctum housing the main deity — the holiest part of the temple." },
+  ]},
+  { label: "Extra Questions", questions: [
+    { q: "What does 'Indian Knowledge Tradition' refer to?", opts: ["Knowledge systems developed in India over thousands of years","Western educational frameworks","Modern scientific discoveries","None of the above"], ans: 0, reason: "IKT refers to the vast body of knowledge accumulated in India across millennia across all fields." },
+    { q: "Which term is suggested to be more appropriate than 'Indian Knowledge Tradition'?", opts: ["Indian Knowledge Systems","Indian Science","Bharat Knowledge","Indian Educational Framework"], ans: 0, reason: "IKS (Indian Knowledge Systems) is preferred as it's more inclusive and academically precise." },
+    { q: "What is one reason for the perception of Indian knowledge as inferior?", opts: ["Lack of written records","Colonial influence creating sentiment that Western knowledge is superior","Limited scope of Indian knowledge","Modernization and industrialization"], ans: 1, reason: "British colonialism systematically devalued indigenous knowledge and promoted Western frameworks as superior." },
+    { q: "How long is Indian culture recognized to be in existence?", opts: ["2000 years","5000 years","1000 years","3000 years"], ans: 1, reason: "Indian civilization is recognized as one of the oldest, with 5000+ years of continuous cultural tradition." },
+    { q: "What does 'Tradition' in 'Indian Knowledge Tradition' signify?", opts: ["Knowledge limited to books and research","Knowledge embedded in everyday life and public consciousness","Knowledge only from ancient texts","Knowledge that is modern and scientific"], ans: 1, reason: "Tradition here means living knowledge passed down through practice, oral tradition, and daily life — not just books." },
+    { q: "What is the goal of studying the Indian Knowledge Tradition?", opts: ["To replicate Western educational systems","To regain ancient consciousness for global benefit","To focus solely on spiritual knowledge","To abandon traditional practices"], ans: 1, reason: "The goal is to rediscover India's intellectual heritage and apply its wisdom to solve contemporary global problems." },
+    { q: "What is emphasized as a unique aspect of Indian knowledge compared to Western knowledge?", opts: ["It is based purely on theoretical concepts","It has a holistic perspective that integrates various aspects of life","It is only applicable in rural settings","It focuses solely on technological advancements"], ans: 1, reason: "IKS integrates science, spirituality, ethics, and daily life — unlike the compartmentalized Western approach." },
+    { q: "What does the Indian Knowledge System aim to address?", opts: ["Historical events only","Current societal problems and emerging challenges","Only spiritual issues","None of the above"], ans: 1, reason: "IKS is positioned as a source of sustainable solutions for modern problems like health, ecology, and governance." },
+    { q: "What is the significance of NEP 2020 in relation to Indian Knowledge Systems?", opts: ["It disregards traditional knowledge","It promotes integration of IKS into the curriculum","It focuses only on Western knowledge","It limits education to modern sciences"], ans: 1, reason: "NEP 2020 explicitly mandates inclusion of IKS in higher education curriculum to reconnect students with heritage." },
+    { q: "What is the main purpose of studying the Indian Knowledge Tradition?", opts: ["To revive ancient craftsmanship and consciousness","To learn from Western knowledge systems","To preserve traditional practices","To compete with modern science"], ans: 0, reason: "The purpose is to revive India's ancient wisdom and consciousness for practical application in today's world." },
+    { q: "Which is NOT a reason cited for the decline of the Indian Knowledge Tradition?", opts: ["Planned attempts to destroy Indian culture","Lack of scientific temper","Invasions and destruction of centers of learning","Disruption of the flow of knowledge"], ans: 1, reason: "Lack of scientific temper is not cited — invasions, colonial suppression, and disruption are the key reasons." },
+    { q: "What is the significance of the story about the beggar and the wooden box?", opts: ["It emphasizes the importance of hard work","It suggests that Indians have been dependent on the West","It encourages people to beg for alms","It discourages people from sitting on boxes"], ans: 1, reason: "The story symbolizes India sitting on a treasure of knowledge while begging for wisdom from the West." },
+    { q: "Which fields did India excel in according to the Indian Knowledge Tradition?", opts: ["Only spirituality","Architecture, metallurgy, literature, art, mathematics, chemistry","Modern sciences like software and urban planning","None of the above"], ans: 1, reason: "India had advanced knowledge across architecture (temples), mathematics (zero), metallurgy (iron pillar), and more." },
+    { q: "What is the role of research in the Indian Knowledge Tradition?", opts: ["To open the treasures of ancient knowledge","To compete with Western science","To preserve traditional practices","To beg from the West"], ans: 0, reason: "Research into IKS helps unlock ancient wisdom that has been neglected or forgotten under colonial influence." },
+    { q: "What is the basis of the Indian Knowledge Tradition?", opts: ["Dependence on the West","Lack of scientific temper","Hindu consciousness","Begging from others"], ans: 2, reason: "The course material states that Hindu consciousness — a dharmic world view — forms the foundational basis of IKT." },
+    { q: "Which is NOT a characteristic of the Indian Knowledge Tradition?", opts: ["Holistic perspective","Consideration for the welfare of all","Lack of side effects on nature","Dependence on Western knowledge"], ans: 3, reason: "Dependence on Western knowledge is the opposite of IKT's characteristic — IKT is self-sufficient and indigenous." },
+    { q: "What is the relationship between IKT and modern sciences?", opts: ["They are incompatible","Modern sciences are based on the Indian Knowledge Tradition","The Indian Knowledge Tradition is outdated","Modern sciences have surpassed IKT"], ans: 1, reason: "The text argues that many modern sciences (maths, astronomy, surgery) have roots in ancient Indian knowledge." },
+    { q: "What is the significance of IKT for the future?", opts: ["It provides sustainable solutions","It is irrelevant in the modern world","It promotes dependence on the West","It lacks scientific temper"], ans: 0, reason: "IKS offers sustainable, holistic solutions to modern challenges like climate change, health, and social harmony." },
+    { q: "What is the responsibility of Indians as carriers of IKT?", opts: ["To preserve traditional practices","To beg from the West","To make efforts to open the treasures of ancient knowledge","To compete with Western science"], ans: 2, reason: "Indians must actively research, revive, and disseminate their ancient knowledge for the world's benefit." },
+    { q: "What is the main reason for Rudrapratap Dev living as a servant?", opts: ["He chose to live a simple life","He suffered from self-forgetfulness due to an accident","He was exiled from the kingdom","He wanted to learn about common people's lives"], ans: 1, reason: "The story uses self-forgetfulness as an allegory for India forgetting its own royal intellectual heritage." },
+    { q: "What does the story of Rudrapratap Dev symbolize for India?", opts: ["The importance of wealth","The consequences of forgetting one's identity and heritage","The benefits of modernization","The significance of agriculture"], ans: 1, reason: "Like the king who forgot who he was, India forgot its knowledge identity due to colonial self-forgetfulness." },
+    { q: "What is necessary for a nation's survival and progress?", opts: ["Abandoning traditional practices","Maintaining its inherent nature and identity","Following Western models","Focusing solely on economic growth"], ans: 1, reason: "A nation loses its vitality when it abandons its cultural identity — its dharma and indigenous knowledge." },
+    { q: "What method did Americans use to destroy the selfhood of enslaved people?", opts: ["Providing them with education","Changing their names","Offering them freedom","Ignoring their existence"], ans: 1, reason: "Changing names was used to erase cultural identity — the same strategy colonizers used in India too." },
+    { q: "What does the Bhagavad Gita suggest about faith?", opts: ["Faith is irrelevant to one's identity","Everyone's faith shapes their essence and identity","Faith should be based on material wealth","Faith is only important for nations"], ans: 1, reason: "Gita (17.3) states 'shraddhamayi ayam purushah' — a person is what their faith/belief makes them." },
+    { q: "What does 'self-forgetfulness' imply in the context of the story?", opts: ["A lack of ambition","Forgetting one's true identity and purpose","Ignoring one's responsibilities","Embracing a new lifestyle"], ans: 1, reason: "Self-forgetfulness = losing awareness of one's true nature, heritage, and potential — India's colonial condition." },
+    { q: "What can be inferred about the impact of forgetting traditional knowledge on India?", opts: ["It led to greater prosperity","It resulted in a loss of vigor, valor, and wealth","It had no significant effect","It improved international relations"], ans: 1, reason: "The text argues that India's decline in vitality, wealth, and power stems from abandoning its knowledge tradition." },
+    { q: "What is the story of Rudrapratap Dev meant to illustrate?", opts: ["Identity is fixed and cannot change","Both individuals and nations can lose their identity and purpose","Identity is only important for individuals","Nations should abandon their past"], ans: 1, reason: "Both individuals and nations can suffer from identity loss — and both can reclaim their true nature." },
+    { q: "What does the minister's recognition of Rudrapratap Dev signify?", opts: ["The importance of wealth","The return to one's true identity and heritage","The need for modernization","The significance of military power"], ans: 1, reason: "Recognition by the minister symbolizes India being recognized for and returning to its true intellectual heritage." },
+    { q: "What is described as India's true self?", opts: ["A country formed by British administration","A fully developed level of consciousness that wishes well for all","A civilization that has nothing of its own","A nation that relies on Western education"], ans: 1, reason: "India's essence is described as a highly evolved consciousness characterized by universal welfare (Vasudhaiva Kutumbakam)." },
+    { q: "What has been India's prayer since the beginning of existence?", opts: ["To conquer other nations","To achieve wealth and power","Peace in all aspects of life and the universe","To imitate Western cultures"], ans: 2, reason: "India's foundational prayer is 'Om Shanti Shanti Shanti' — peace for the individual, society, and cosmos." },
+    { q: "What did Macaulay believe was necessary to enslave India?", opts: ["Changing the political system","Stopping education in Sanskrit and promoting English","Promoting Indian culture","Strengthening local governance"], ans: 1, reason: "Macaulay's 1835 Minute argued replacing Sanskrit/vernacular education with English to create intellectual colonization." },
+    { q: "What happens when a society loses its culture?", opts: ["It becomes more modern","It loses its heart and soul","It gains strength","It becomes more unified"], ans: 1, reason: "Culture is the soul of a civilization — losing it means losing identity, purpose, and vitality as a people." },
+    { q: "What historical example illustrates the importance of cultural identity?", opts: ["The rise of the British Empire","The establishment of the United States","The nation of Israel reclaiming its land","The fall of the Roman Empire"], ans: 2, reason: "Israel reclaimed its land after 2000 years by preserving Hebrew language and cultural identity through diaspora." },
+    { q: "What is described as the 'soul' of India?", opts: ["Its economic power","Its political system","Its dharma and cultural principles","Its military strength"], ans: 2, reason: "India's dharma — its moral-spiritual principles and cultural values — is described as its true soul." },
+    { q: "How does the text characterize India's approach to other nations?", opts: ["As an exploiter","As a server that helps others rise","As a conqueror","As indifferent to other cultures"], ans: 1, reason: "India's tradition is 'Vasudhaiva Kutumbakam' — serving as a teacher and helper to the whole world-family." },
+    { q: "What does the narrative of Prahlad and Indra symbolize?", opts: ["The inevitability of defeat","The importance of maintaining one's essence and values","The futility of seeking power","The need for external validation"], ans: 1, reason: "The story illustrates that one's core essence (dharma) cannot be destroyed — it must be maintained faithfully." },
+    { q: "What is the primary difference between 'Invasion' and 'Colonization'?", opts: ["Invasion is economic; Colonization is cultural","Invasion is dominance by force; Colonization makes the dominated serve invaders willingly","Invasion is peaceful; Colonization is violent","They are the same concepts"], ans: 1, reason: "Colonization is more insidious — the colonized internalize the colonizer's values and serve them voluntarily." },
+    { q: "What is Swami Vivekananda's message to India?", opts: ["To adopt Western traditions","To realize the value of its knowledge and share it with the world","To become self-sufficient and cut ties with others","To focus solely on economic development"], ans: 1, reason: "Vivekananda urged India to wake up, rediscover its spiritual wisdom, and share it as a gift to humanity." },
+    { q: "How is India's history over the last millennium described?", opts: ["Continuous progress and stability","A time of decline and subjugation","A time of scientific advancements","Complete isolation from the world"], ans: 1, reason: "The last millennium brought invasions, colonization, and systematic suppression of India's knowledge and identity." },
+    { q: "What is the significance of Indian knowledge traditions?", opts: ["They are outdated and should be replaced","They are invaluable and offer solutions to global challenges","They are only relevant to Indian culture","They are important for internal development only"], ans: 1, reason: "IKS offers timeless wisdom on sustainability, health, governance, and harmony applicable to global challenges today." },
+    { q: "What is Swami Vivekananda's view on India's past and future?", opts: ["The past should be completely forgotten","The future should be based on strength and knowledge of the past","The past was irrelevant","Past and future are disconnected"], ans: 1, reason: "Vivekananda believed India's glorious past provides the spiritual and intellectual foundation for its future greatness." },
+  ]},
+];
+
+let answered = 0, correctCount = 0;
+const states = {};
+
+function render() {
+  const body = document.getElementById('quiz-body');
+  let html = '';
+  let qNum = 0;
+  const letters = ['A','B','C','D'];
+  weeks.forEach((week, wi) => {
+    html += `<div class="week-label">${week.label}</div>`;
+    week.questions.forEach((q, qi) => {
+      qNum++;
+      const key = `${wi}-${qi}`;
+      const state = states[key] || {};
+      let optsHtml = q.opts.map((opt, oi) => {
+        let cls = 'option';
+        if (state.revealed) {
+          if (oi === q.ans) cls += ' correct';
+          else if (state.chosen === oi && oi !== q.ans) cls += ' wrong';
+        } else if (state.chosen === oi) cls += ' selected';
+        return `<div class="${cls}" onclick="choose(${wi},${qi},${oi})"><span class="opt-letter">${letters[oi]}</span>${opt}</div>`;
+      }).join('');
+      let ansBox = state.revealed
+        ? `<div class="answer-box" style="display:block">✓ Answer: ${letters[q.ans]}. ${q.opts[q.ans]}<div class="reason">${q.reason}</div></div>`
+        : '';
+      html += `<div class="q-card">
+        <div class="q-num">Q${qNum}</div>
+        <div class="q-text">${q.q}</div>
+        <div class="options">${optsHtml}</div>
+        <button class="reveal-btn" onclick="reveal(${wi},${qi})">${state.revealed ? 'Hide answer' : 'Show answer & reason'}</button>
+        ${ansBox}
+      </div>`;
+    });
+  });
+  body.innerHTML = html;
+  document.getElementById('answered').textContent = answered;
+  document.getElementById('correct-count').textContent = correctCount;
+  document.getElementById('score-pct').textContent = answered ? Math.round(correctCount / answered * 100) + '%' : '0%';
+}
+
+function choose(wi, qi, oi) {
+  const key = `${wi}-${qi}`;
+  if (states[key] && states[key].chosen !== undefined) return;
+  const q = weeks[wi].questions[qi];
+  if (!states[key]) states[key] = {};
+  answered++;
+  if (oi === q.ans) correctCount++;
+  states[key].chosen = oi;
+  states[key].revealed = true;
+  render();
+}
+
+function reveal(wi, qi) {
+  const key = `${wi}-${qi}`;
+  if (!states[key]) states[key] = {};
+  states[key].revealed = !states[key].revealed;
+  render();
+}
+
+function resetAll() {
+  Object.keys(states).forEach(k => delete states[k]);
+  answered = 0; correctCount = 0;
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
